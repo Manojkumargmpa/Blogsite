@@ -21,7 +21,7 @@ app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
-const posts = [];
+// const posts = [];
 app.get("/contact", (req, res) => {
   res.render("contact.ejs", { contactdetails: contactContent })
 })
@@ -31,13 +31,17 @@ app.get("/about", (req, res) => {
   res.render("about.ejs", { aboutdetails: aboutContent })
 
 })
-app.get("/", (req, res) => {
+app.get("/", async(req, res) => {
 
-  res.render("home", {
-    homestartcontent: homeStartingContent,
-    allposts: posts
+  async function run(){
+  const blogs=await Blog.find({});
+  res.render("home",{
+    homestartcontent:homeStartingContent,
+    allposts:blogs
+  })
+}
+  await run();
 
-  });
 })
 app.get("/compose", (req, res) => {
   res.render("compose.ejs");
