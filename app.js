@@ -31,7 +31,7 @@ app.get("/about", (req, res) => {
   res.render("about.ejs", { aboutdetails: aboutContent })
 
 })
-app.get("/", async(req, res) => {
+app.get("/", (req, res) => {
 
   async function run(){
   const blogs=await Blog.find({});
@@ -40,7 +40,7 @@ app.get("/", async(req, res) => {
     allposts:blogs
   })
 }
-  await run();
+   run();
 
 })
 app.get("/compose", (req, res) => {
@@ -66,17 +66,36 @@ await run();
   //console.log(required.postbody);
 })
 
-app.get("/posts/:postName", function(req,res){
-  const requestedtitle=_.lowerCase(req.params.postName);
-  for(var i=0;i<posts.length;i++)
-  {
-    const storedtitle=_.lowerCase(posts[i].title);
-    if(storedtitle==requestedtitle){
+app.get("/posts/:postName", async function(req,res){
+   const requestedtitle=(req.params.postName);
+  // for(var i=0;i<posts.length;i++)
+  // {
+  //   const storedtitle=_.lowerCase(posts[i].title);
+  //   if(storedtitle==requestedtitle){
      
-      res.render("post" , {posttitle:posts[i].title, postbody:posts[i].body});
-    }
+  //     res.render("post" , {posttitle:posts[i].title, postbody:posts[i].body});
+  //   }
    
+  // }
+  async function run(requestedtitle) {
+    return await Blog.findOne({ title: requestedtitle });
   }
+  
+  async function findBlogByTitle(requestedtitle) {
+    try {
+      const corrblog = await run(requestedtitle);
+     res.render("post",{
+      posttitle:corrblog.title,
+      postbody:corrblog.body
+    })
+  
+    } catch (error) {
+      console.error(error);
+    }
+  }
+  
+  // Call the function with the desired title
+  findBlogByTitle(requestedtitle);
 });
 
 
